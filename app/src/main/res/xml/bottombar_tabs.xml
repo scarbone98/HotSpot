@@ -1,0 +1,19 @@
+<tabs>
+
+    <tab id="@+id/profile"
+        icon="@drawable/ic_group_black_24dp"
+        title="Profile"/>
+
+    <tab id="@+id/friends"
+        icon="@drawable/ic_group_black_24dp"
+        title="Friends"/>
+
+    <tab id="@+id/home"
+        icon="@drawable/ic_group_black_24dp"
+        title="Home"/>
+
+    <tab id="@+id/hotSpot"
+        icon="@drawable/ic_group_black_24dp"
+        title="Hot Spots"/>
+
+</tabs>

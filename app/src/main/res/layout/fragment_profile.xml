@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_profile"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#424242"
+    tools:context="com.example.scarb.firebasetest.TabManagerActivity">
+
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="17dp"
+        android:layout_gravity="top"
+        android:scaleType="centerCrop"
+        android:id="@+id/profilePicture"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal"
+        android:layout_below="@+id/usernameView"
+        android:layout_toLeftOf="@+id/friendTextSearch"
+        android:layout_toStartOf="@+id/friendTextSearch" />
+
+    <Button
+        android:id="@+id/uploadButton"
+        android:layout_width="100dp"
+        android:textColor="#FFFFFF"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:background="@drawable/round_button"
+        android:text="Upload"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/profilePicture"
+        android:layout_alignLeft="@+id/profilePicture"
+        android:layout_alignStart="@+id/profilePicture" />
+    <ImageView
+        android:id="@+id/friendImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal"
+        android:layout_below="@+id/signOut"
+        android:layout_alignLeft="@+id/friendSearchButton"
+        android:layout_alignStart="@+id/friendSearchButton"
+        android:layout_marginTop="34dp" />
+    <Button
+        android:layout_width="100dp"
+        android:textColor="#FFFFFF"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/round_button"
+        android:id="@+id/signOut"
+        android:text="Sign Out"
+        android:layout_alignBaseline="@+id/uploadButton"
+        android:layout_alignBottom="@+id/uploadButton"
+        android:layout_toRightOf="@+id/friendTextSearch"
+        android:layout_toEndOf="@+id/friendTextSearch" />
+    <EditText
+        android:id="@+id/friendTextSearch"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:inputType="textPersonName"
+        android:hint="Find Friend"
+        android:textAlignment="center"
+        android:layout_below="@+id/friendImageView"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/friendSearchButton"
+        android:layout_width="100dp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/round_button"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Search"
+        android:layout_marginTop="33dp"
+        android:layout_below="@+id/friendTextSearch"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:textColor="#FFFFFF"
+        android:id="@+id/usernameView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:text="PlaceHolder"
+        android:textSize="20sp"
+        android:layout_marginTop="13dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+   </RelativeLayout>
