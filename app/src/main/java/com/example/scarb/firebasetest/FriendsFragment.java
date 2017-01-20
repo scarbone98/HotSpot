@@ -70,17 +70,23 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            //ArrayList<String> friendsTemp = new ArrayList<>();
                             ArrayList<FriendData> friendsTemp = new ArrayList<>();
+
                             for (DataSnapshot user : dataSnapshot.child("Users")
                                     .child(currentUser.getUid()).child("Friends").getChildren()) {
 
                                 String userName = user.getKey();
+                                boolean pending = false;
                                 String userUID = dataSnapshot.child("HashMap").
                                         child(userName.toLowerCase().trim()).getValue().toString();
                                 String photoID = dataSnapshot.child("Users").child(userUID).
                                         child("profileURL").getValue().toString();
-                                FriendData friendData = new FriendData(userName, photoID);
+
+                                if (user.getValue().toString().equals("pending")){
+                                    pending = true;
+                                }
+
+                                FriendData friendData = new FriendData(userName, photoID, pending);
 
                                 friendsTemp.add(friendData);
                             }
@@ -88,6 +94,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 loadArray(friendsTemp);
                             }
                         }
+
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
                             Toast.makeText(getActivity(), "Error, try refreshing", Toast.LENGTH_SHORT)
@@ -96,7 +103,7 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                     });
         }catch (Exception e){
             //ADD SOMETHING ELSE HERE TO TELL USER HOW TO ADD FRIEND
-                Log.e("No friends", "User has no friends yet.");
+            Log.e("No friends", "User has no friends yet.");
         }
     }
     public void loadArray(ArrayList<FriendData> friendsTemp){
