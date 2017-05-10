@@ -38,6 +38,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -129,7 +130,6 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
                                 create(getResources(), bitmap);
                         roundedBitmapDrawable.setCircular(true);
                         friendImageView.setImageDrawable(roundedBitmapDrawable);
-                        //friendImageView.setImageBitmap(bitmap);
                     }
                 } catch (Exception e){
                     Toast.makeText(getActivity().getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT).show();
@@ -161,7 +161,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
         else if(view == signOutButton){
             firebaseAuth.signOut();
             getActivity().finish();
-            startActivity(new Intent(getActivity(), MainActivity.class));
+            startActivity(new Intent(getActivity(), LoginAndSignUp.class));
         }
         /*
             Checks if the button clicked is the search button.
@@ -230,5 +230,10 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
             }
             //imageView.setImageURI(selectedImage);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

@@ -17,7 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
+public class Login extends AppCompatActivity implements View.OnClickListener{
 
     private Button create;
     private EditText email;
@@ -62,12 +62,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(LoginActivity.this, "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Logged in successfully!", Toast.LENGTH_SHORT).show();
                             finish();
-                            startActivity(new Intent(getApplicationContext(), TabManagerActivity.class));
+                            startActivity(new Intent(getApplicationContext(), MainTabsManager.class));
                         }
                         else{
-                            Toast.makeText(LoginActivity.this, "Please try again.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Please try again.", Toast.LENGTH_SHORT).show();
                         }
                         progressDialog.dismiss();
                     }
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
         else if(view == hasAccount){
             finish();
-            startActivity(new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, SignUp.class));
         }
     }
 }

@@ -107,11 +107,6 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
         }
     }
     public void loadArray(ArrayList<FriendData> friendsTemp){
-        /*
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(),
-                R.layout.friend,
-                friendsTemp);
-                */
         FriendAdapter friendAdapter = new FriendAdapter(getActivity(),
                 R.layout.friend_row,
                 friendsTemp);

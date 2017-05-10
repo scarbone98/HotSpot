@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
     private Button create;
     private EditText username;
@@ -30,12 +30,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressDialog progressDialog;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
+    private Button admin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         /*
             Checks to see if current user is already signed in. If he is then
-            open the TabManagerActivity instead.
+            open the MainTabsManager instead.
          */
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if(user != null){
                     finish();
                     startActivity(new Intent(getApplicationContext(),
-                            TabManagerActivity.class));
+                            MainTabsManager.class));
                 }
             }
         });
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        admin = (Button) findViewById(R.id.fastLogIn);
         create = (Button) findViewById(R.id.createAccount);
         username = (EditText) findViewById(R.id.usernameEnter);
         email = (EditText) findViewById(R.id.emailEnter);
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         databaseReference = FirebaseDatabase.getInstance().getReference();
         create.setOnClickListener(this);
         hasAccount.setOnClickListener(this);
+        admin.setOnClickListener(this);
     }
 
     public void registerUser(){
@@ -91,16 +94,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Toast.makeText(MainActivity.this, "Created Successfully!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUp.this, "Created Successfully!", Toast.LENGTH_SHORT).show();
                             User user = new User(userName, photoURL);
                             FirebaseUser temp = firebaseAuth.getCurrentUser();
                             databaseReference.child("Users").child(temp.getUid()).setValue(user);
                             databaseReference.child("HashMap").child(userName.toLowerCase().trim()).setValue(temp.getUid());
                             finish();
-                            startActivity(new Intent(getApplicationContext(), TabManagerActivity.class));
+                            startActivity(new Intent(getApplicationContext(), MainTabsManager.class));
                         }
                         else{
-                            Toast.makeText(MainActivity.this, "Please try again.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUp.this, "Please try again.", Toast.LENGTH_SHORT).show();
                         }
                         progressDialog.dismiss();
                     }
@@ -115,7 +118,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else if(view == hasAccount){
             finish();
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, Login.class));
+        }
+        //Temporary
+        else{
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            firebaseAuth.signInWithEmailAndPassword("admin@gmail.com", "1234567").
+                    addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                Toast.makeText(SignUp.this, "Logged in successfully!", Toast.LENGTH_SHORT).show();
+                                finish();
+                                startActivity(new Intent(getApplicationContext(), MainTabsManager.class));
+                            }
+                            else{
+                                Toast.makeText(SignUp.this, "Please try again.", Toast.LENGTH_SHORT).show();
+                            }
+                            progressDialog.dismiss();
+                        }
+                    });
         }
     }
 }

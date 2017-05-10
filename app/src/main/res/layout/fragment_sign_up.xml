@@ -1,0 +1,59 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.scarb.firebasetest.SignUpFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <EditText
+        android:id="@+id/emailEnter"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="E-mail"
+        android:textColor="#FFF"
+        android:textColorHint="#FFF"
+        android:inputType="textEmailAddress"
+        />
+
+    <EditText
+        android:id="@+id/passwordEnter"
+        android:layout_width="300dp"
+        android:layout_marginTop="50dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColorHint="#FFF"
+        android:textColor="#FFF"
+        android:hint="Password"
+        android:inputType="textPassword"
+        />
+    <EditText
+        android:id="@+id/usernameEnter"
+        android:layout_width="300dp"
+        android:layout_marginTop="100dp"
+        android:textColorHint="#FFF"
+        android:textColor="#FFF"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="Username"
+        />
+    <Button
+        android:id="@+id/createAccountEnter"
+        android:layout_width="wrap_content"
+        android:textColor="#FFF"
+        android:layout_height="wrap_content"
+        android:text="Create"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="175dp"
+        android:background="@drawable/round_button"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFF"
+        android:background="@drawable/round_button"
+        android:text="ADMIN"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/adminButton"
+        android:layout_marginTop="250dp"/>
+
+</FrameLayout>

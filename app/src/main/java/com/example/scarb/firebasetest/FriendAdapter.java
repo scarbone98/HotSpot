@@ -114,7 +114,7 @@ public class FriendAdapter extends ArrayAdapter<FriendData>{
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Error refresh", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error, please refresh.", Toast.LENGTH_SHORT).show();
             }
         });
     }

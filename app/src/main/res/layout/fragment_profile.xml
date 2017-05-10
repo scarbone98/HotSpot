@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#424242"
-    tools:context="com.example.scarb.firebasetest.TabManagerActivity">
+    tools:context="com.example.scarb.firebasetest.MainTabsManager">
 
 
     <ImageView
@@ -86,7 +86,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
-        android:text="PlaceHolder"
+        android:text=""
         android:textSize="20sp"
         android:layout_marginTop="13dp"
         android:layout_alignParentTop="true"

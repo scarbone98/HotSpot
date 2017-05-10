@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
+    android:background="#424242"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.scarb.firebasetest.MainActivity">
+    tools:context="com.example.scarb.firebasetest.SignUp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -19,8 +20,10 @@
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="#FFFF"
             android:id="@+id/usernameEnter"
             android:hint="Enter username"
+            android:textColorHint="#FFFF"
             android:textAlignment="center"/>
         <EditText
             android:layout_marginTop="20dp"
@@ -28,26 +31,42 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/emailEnter"
+            android:textColor="#FFFF"
+            android:textColorHint="#FFFF"
             android:hint="Enter email"
             android:textAlignment="center"/>
         <EditText
             android:layout_marginTop="20dp"
             android:layout_marginBottom="20dp"
             android:inputType="textPassword"
+            android:textColor="#FFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/passwordEnter"
+            android:textColorHint="#FFFF"
             android:hint="Enter Password"
             android:textAlignment="center"/>
         <Button
             android:layout_marginBottom="20dp"
             android:layout_width="wrap_content"
+            android:textColor="#FFFF"
+            android:background="@drawable/round_button"
             android:layout_height="wrap_content"
             android:text="Create"
             android:id="@+id/createAccount"
             />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_button"
+            android:text="Admin"
+            android:textColor="#FFFF"
+            android:layout_marginBottom="50dp"
+            android:id="@+id/fastLogIn"
+            />
         <TextView
             android:layout_width="wrap_content"
+            android:textColor="#FFFF"
             android:layout_height="wrap_content"
             android:text="Have an account? Click here."
             android:clickable="true"
@@ -61,6 +80,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="72dp"
+        android:textColor="#FFFF"
         android:textSize="30dp"
         android:text="Sign Up" />
 
