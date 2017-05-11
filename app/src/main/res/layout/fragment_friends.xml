@@ -23,29 +23,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/round_button"
+            android:layout_marginBottom="110dp"
             >
         </ListView>
-        <!---
-        <EditText
-            android:layout_width="150dp"
-            android:inputType="textPersonName"
-            android:layout_height="wrap_content"
-            android:textColor="#FFFFFFFF"
-            android:textColorHint="#FFFFFF"
-            android:hint="Search"
-            android:id="@+id/addFriendText"
-            android:textAlignment="center" />
-            -->
-        <!---
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="Add"
-            android:background="@drawable/round_button"
-            android:id="@+id/add"
-            android:layout_marginBottom="68dp" />
-            -->
-
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,22 +33,24 @@
         android:layout_gravity="bottom"
         android:background="#424242"
         android:layout_marginBottom="60dp">
-
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="Add friend"
+            android:inputType="textPersonName"
+            android:id="@+id/addFriendText"
+            android:textColor="#FFFF"
+            android:textColorHint="#FFFF"/>
         <Button
             android:id="@+id/add"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:background="@drawable/round_button"
             android:text="Add"
             android:textColor="#FFFF"
             />
-        <EditText
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:hint="Find friend"
-            android:id="@+id/addFriendText"
-            android:textColor="#FFFF"
-            android:textColorHint="#FFFF"/>
     </LinearLayout>
 </FrameLayout>

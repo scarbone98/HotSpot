@@ -57,7 +57,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if(user != null){
-                    getActivity().finish();
+                    //getActivity().finish();
                     startActivity(new Intent(getActivity().getApplicationContext(),
                             MainTabsManager.class));
                 }

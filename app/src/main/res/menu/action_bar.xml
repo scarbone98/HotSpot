@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/userFriends"
+        app:showAsAction="ifRoom|withText"
+        android:title="FRIENDS"
+        android:onClick="showFriends"
+        android:icon="@drawable/friends">
+    </item>
+    <item
+        android:id="@+id/userMessages"
+        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/email"
+        android:title="MESSAGES"
+        android:onClick="showMessages">
+    </item>
+    <item
+        android:id="@+id/userSettings"
+        app:showAsAction="ifRoom|withText"
+        android:title="SETTINGS"
+        android:onClick="showSettings"
+        android:icon="@drawable/settings">
+    </item>
+</menu>

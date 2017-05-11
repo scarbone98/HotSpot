@@ -89,9 +89,10 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 FriendData friendData = new FriendData(userName, photoID, pending);
 
                                 friendsTemp.add(friendData);
-                            }
-                            if (friendsTemp.size() != 0) {
-                                loadArray(friendsTemp);
+
+                                if (friendsTemp.size() != 0) {
+                                    loadArray(friendsTemp);
+                                }
                             }
                         }
 
@@ -134,13 +135,16 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                     String userId = dataSnapshot.child("HashMap").child(username.toLowerCase().trim()).getValue().toString();
                     String realUserName = dataSnapshot.child("Users").child(userId).child("username").getValue().toString();
                     setValues(realUserName, userId, currentUserName);
+                    Toast.makeText(getActivity(), "Friend added", Toast.LENGTH_SHORT)
+                            .show();
+                    loadFriendsList();
                 } catch (Exception e){
                     Toast.makeText(getActivity().getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(getActivity().getApplicationContext(), "Please try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity().getApplicationContext(), "Please try again", Toast.LENGTH_SHORT).show();
             }
         });
     }

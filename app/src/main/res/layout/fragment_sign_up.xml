@@ -29,6 +29,7 @@
         />
     <EditText
         android:id="@+id/usernameEnter"
+        android:inputType="textPersonName"
         android:layout_width="300dp"
         android:layout_marginTop="100dp"
         android:textColorHint="#FFF"

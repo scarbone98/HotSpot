@@ -72,6 +72,9 @@ public class FriendAdapter extends ArrayAdapter<FriendData>{
                     ViewGroup.LayoutParams.WRAP_CONTENT);
             ll.addView(button, lp);
         }
+
+
+        //If the user is already a friend then remove the ADD button
         else if(!friendData.getPeding() && convertView.findViewById(R.id.linearLayout)
                 .findViewWithTag("created") != null){
             try {
@@ -81,13 +84,12 @@ public class FriendAdapter extends ArrayAdapter<FriendData>{
                 Log.e("Something", "Went Wrong");
             }
         }
-        //If the user is already a friend then remove the ADD button
 
+        //Load the friend's picture into their imageView
         ImageView imageView = (ImageView) convertView.findViewById(R.id.friendPicture);
         TextView textView = (TextView) convertView.findViewById(R.id.friendUserName);
         /*Gets user name */
         textView.setText(friendData.getUsername());
-
         /*Decodes the image from dataBase to bitmap*/
         InputStream stream = new ByteArrayInputStream(
                 Base64.decode(friendData.getPhotoID().getBytes(), Base64.DEFAULT));
