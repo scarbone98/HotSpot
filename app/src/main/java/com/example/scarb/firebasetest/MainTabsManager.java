@@ -87,10 +87,12 @@ public class MainTabsManager extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.action_bar, menu);
         return true;
     }
+
     //Show messages
     public void showMessages(MenuItem item){
         Toast.makeText(this, "Show messages", Toast.LENGTH_LONG).show();
     }
+
     //Show friends
     public void showFriends(MenuItem item){
         if (stackCheckOrder.peek() != bottomBar.getCurrentTabId()){
@@ -100,10 +102,14 @@ public class MainTabsManager extends AppCompatActivity {
         fragmentManager.beginTransaction().replace(R.id.newFrame, fragment)
                 .addToBackStack("friends").commit();
     }
+
     //Show settings
     public void showSettings(MenuItem item){
         Toast.makeText(this, "Show settings", Toast.LENGTH_LONG).show();
     }
+
+
+    //Need to make custom on backPressed, to only work for fragments.
     @Override
     public void onBackPressed() {
         super.onBackPressed();

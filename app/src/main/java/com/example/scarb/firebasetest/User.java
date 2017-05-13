@@ -5,12 +5,6 @@ public class User {
     public String name;
     public String profileURL;
     public int age;
-    public User(){
-
-    }
-    public User(String username){
-        this.username = username;
-    }
 
     public User(String username, String profileURL){
         this.username = username;

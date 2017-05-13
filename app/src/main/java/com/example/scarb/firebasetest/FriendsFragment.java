@@ -89,10 +89,9 @@ public class FriendsFragment extends Fragment implements View.OnClickListener{
                                 FriendData friendData = new FriendData(userName, photoID, pending);
 
                                 friendsTemp.add(friendData);
-
-                                if (friendsTemp.size() != 0) {
-                                    loadArray(friendsTemp);
-                                }
+                            }
+                            if (friendsTemp.size() != 0) {
+                                loadArray(friendsTemp);
                             }
                         }
 

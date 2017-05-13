@@ -55,12 +55,6 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
     private Button uploadButton, friendButton, signOutButton;
     private Uri selectedImage;
     private FirebaseUser user;
-
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
