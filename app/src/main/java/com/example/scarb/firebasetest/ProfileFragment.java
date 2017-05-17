@@ -43,7 +43,7 @@ import java.lang.reflect.Field;
 import static android.app.Activity.RESULT_OK;
 
 
-public class ProfileFragment extends android.app.Fragment implements View.OnClickListener{
+public class ProfileFragment extends android.app.Fragment implements View.OnClickListener {
 
     private static final int RESULT_LOAD_IMAGE = 5;
     private ImageView imageView, friendImageView;
@@ -55,10 +55,15 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
     private Button uploadButton, friendButton, signOutButton;
     private Uri selectedImage;
     private FirebaseUser user;
+    private View view;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        if (view == null) {
+            view = inflater.inflate(R.layout.fragment_profile, container, false);
+        }
+        return view;
     }
 
     @Override
@@ -82,7 +87,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         String imageEncoded = dataSnapshot.child("profileURL").getValue().toString();
-                        if(!imageEncoded.equals("")) {
+                        if (!imageEncoded.equals("")) {
                             InputStream stream = new ByteArrayInputStream(
                                     Base64.decode(imageEncoded.getBytes(), Base64.DEFAULT));
                             Bitmap bitmap = BitmapFactory.decodeStream(stream);
@@ -109,7 +114,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
         friendButton.setOnClickListener(this);
     }
 
-    public void searchFriend(final String username){
+    public void searchFriend(final String username) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -125,7 +130,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
                         roundedBitmapDrawable.setCircular(true);
                         friendImageView.setImageDrawable(roundedBitmapDrawable);
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
                     Toast.makeText(getActivity().getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -144,7 +149,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
             the image gallery. The user must pick an Image. Once the image is picked
             it is loaded into the imageView.
          */
-        if(view == imageView){
+        if (view == imageView) {
             Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(galleryIntent, RESULT_LOAD_IMAGE);
@@ -152,7 +157,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
         /*
             Button to sign the user out.
          */
-        else if(view == signOutButton){
+        else if (view == signOutButton) {
             firebaseAuth.signOut();
             getActivity().finish();
             startActivity(new Intent(getActivity(), LoginAndSignUp.class));
@@ -162,7 +167,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
             If it is the program calls a function to see if the user that was typed in
             exists.
          */
-        else if (view == friendButton){
+        else if (view == friendButton) {
             String username = friendText.getText().toString();
             searchFriend(username);
         }
@@ -172,7 +177,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
             message saying to load a new Image. The image is then
             encoded to Base64 and sent to the users database location.
          */
-        else if(view == uploadButton && selectedImage != null){
+        else if (view == uploadButton && selectedImage != null) {
             StorageReference filePath = storageReference.child("Users").child(user.getUid()).child("Photo");
 
             filePath.putFile(selectedImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -200,9 +205,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
                             .show();
                 }
             });
-        }
-
-        else{
+        } else {
             Toast.makeText(getActivity(), "Please enter a new image.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -210,7 +213,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == RESULT_LOAD_IMAGE && data != null && resultCode == RESULT_OK){
+        if (requestCode == RESULT_LOAD_IMAGE && data != null && resultCode == RESULT_OK) {
             try {
                 selectedImage = data.getData();
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver()
@@ -219,7 +222,7 @@ public class ProfileFragment extends android.app.Fragment implements View.OnClic
                         create(getResources(), bitmap);
                 roundedBitmapDrawable.setCircular(true);
                 imageView.setImageDrawable(roundedBitmapDrawable);
-            } catch (IOException e){
+            } catch (IOException e) {
                 Log.e("broken", "Done");
             }
             //imageView.setImageURI(selectedImage);

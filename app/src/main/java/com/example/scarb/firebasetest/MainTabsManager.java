@@ -51,16 +51,6 @@ public class MainTabsManager extends AppCompatActivity {
                             .addToBackStack("profile").commit();
 
                 }
-                /*
-                else if (tabId == R.id.friends) {
-                    if (stackCheckOrder.peek() != bottomBar.getCurrentTabId()){
-                        stackCheckOrder.push(bottomBar.getCurrentTabId());
-                    }
-                    Fragment fragment = new FriendsFragment();
-                    fragmentManager.beginTransaction().replace(R.id.newFrame, fragment)
-                    .addToBackStack("friends").commit();
-
-                } */
                 else if (tabId == R.id.home) {
                     if (stackCheckOrder.peek() != bottomBar.getCurrentTabId()){
                         stackCheckOrder.push(bottomBar.getCurrentTabId());
