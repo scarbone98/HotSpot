@@ -1,12 +1,28 @@
 package com.example.scarb.firebasetest;
 
+import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +32,13 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
@@ -40,8 +58,18 @@ import com.google.firebase.database.ValueEventListener;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HotSpotFragment extends android.app.Fragment implements OnMapReadyCallback, View.OnClickListener {
+public class HotSpotFragment extends android.app.Fragment implements OnMapReadyCallback,
+        View.OnClickListener,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks,
+        com.google.android.gms.location.LocationListener{
 
+    //Location manager used to check user's location
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient googleApiClient;
+    private Marker mCurrLocation;
+
+    private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 30;
     //Max parties a user can have
     private final int maxParties = 50;
     //Checks if the create button has been clicked in order to add a pin to the map
@@ -70,7 +98,7 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
     private Button goingButton, createPartyButton, notGoingButton;
     //OwnderInfo, displays the party owner's username, partyDescription displays
     //the description added by the party's owner
-    private TextView ownerInfo, partyDescription;
+    private TextView ownerInfo, partyDescription, partyLocation;
     //EditText box for description of party, used when creating a party
     private EditText partyInfoText;
     //Code used to identify party in database
@@ -104,6 +132,7 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
         createPartyButton = (Button) view.findViewById(R.id.createPartyButton);
         notGoingButton = (Button) view.findViewById(R.id.notGoingButton);
 
+        partyLocation = (TextView) view.findViewById(R.id.partyLocation);
         ownerInfo = (TextView) view.findViewById(R.id.ownerInfo);
         partyDescription = (TextView) view.findViewById(R.id.partyDescriptionTextView);
 
@@ -113,6 +142,8 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
         createPartyWindow = (FrameLayout) view.findViewById(R.id.createPartyWindow);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        //Gets the user's username from the start of the fragment. Makes the code less verbose later on.
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -139,6 +170,10 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         userMap = googleMap;
+        buildGoogleAPI();
+        checkLocationPermission();
+        googleApiClient.connect();
+
         final Calendar calendar = Calendar.getInstance();
         int amPm = calendar.get(Calendar.AM_PM);
         int currentHour = calendar.get(Calendar.HOUR);
@@ -155,7 +190,6 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
         }
         //Check permissions and load current location
 
-
         //Load all the party pins that are currently happening
         loadParties(googleMap);
 
@@ -163,7 +197,6 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                //Check the number of parties the user has
                 if (windowOpen) {
                     partyDescription.setText("");
                     ownerInfo.setText("");
@@ -176,6 +209,7 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
                     openCreatePWindow.setVisibility(View.VISIBLE);
                 }
                 //TODO fix if statement to addMarker, only if description is added to party
+                //Check the number of parties the user has
                 if (userPartyCount < maxParties && createParty) {
                     //ADDS MARKER EVEN IF DESCRIPTION ISN'T ADDED TO PARTY NEED TO FIX
                     partyCoordinates = latLng;
@@ -193,38 +227,61 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(final Marker marker) {
-                //TODO load activity that gives information about party CHANGE HARD CODED STUFF LATERr
-                databaseReference.child("Hotspots").child("Puerto Rico")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.child(marker.getTag().toString())
-                                        .child("Going").child(currentUsername)
-                                        .getValue() == null) {
-                                    goingButton.setVisibility(View.VISIBLE);
-                                    notGoingButton.setVisibility(View.INVISIBLE);
-                                } else {
-                                    goingButton.setVisibility(View.INVISIBLE);
-                                    notGoingButton.setVisibility(View.VISIBLE);
+                //TODO load activity that gives information about party CHANGE HARD CODED STUFF LATER
+                if (marker.getTag() != mCurrLocation.getTag()) {
+                    databaseReference.child("Hotspots").child("Puerto Rico")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.child(marker.getTag().toString())
+                                            .child("Going").child(currentUsername)
+                                            .getValue() == null) {
+                                        goingButton.setVisibility(View.VISIBLE);
+                                        notGoingButton.setVisibility(View.INVISIBLE);
+                                    } else {
+                                        goingButton.setVisibility(View.INVISIBLE);
+                                        notGoingButton.setVisibility(View.VISIBLE);
+                                    }
+                                    String owner = dataSnapshot.child(marker.getTag().toString())
+                                            .child("Owner").getValue().toString();
+                                    String description = dataSnapshot.child(marker.getTag().toString())
+                                            .child("Description").getValue().toString();
+                                    ownerInfo.setText(owner);
+                                    partyDescription.setText(description);
+
+                                    //Get the party's location
+                                    //TODO probably get rid of later
+                                    Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                                    StringBuilder stringBuilder = new StringBuilder();
+                                    try {
+                                        double lat = marker.getPosition().latitude;
+                                        double lon = marker.getPosition().longitude;
+                                        List<Address> addresses = geocoder.getFromLocation(lat,lon, 1);
+                                        int maxAddresses = addresses.get(0).getMaxAddressLineIndex();
+                                        for (int i = 0; i < maxAddresses; i++){
+                                            String addressStr = addresses.get(0).getAddressLine(i);
+                                            stringBuilder.append(addressStr);
+                                            stringBuilder.append(" ");
+                                        }
+                                    }catch (IOException e){
+                                        Toast.makeText(getActivity(), "Could not load current address", Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                    partyLocation.setText(stringBuilder);
+
+                                    //Gets partyCode to check if going to party
+                                    partyCode = marker.getTag().toString();
+                                    partyInfoWindow.setVisibility(View.VISIBLE);
+                                    openCreatePWindow.setVisibility(View.INVISIBLE);
                                 }
-                                String owner = dataSnapshot.child(marker.getTag().toString())
-                                        .child("Owner").getValue().toString();
-                                String description = dataSnapshot.child(marker.getTag().toString())
-                                        .child("Description").getValue().toString();
-                                ownerInfo.setText(owner);
-                                partyDescription.setText(description);
-                                //Gets partyCode to check if going to party
-                                partyCode = marker.getTag().toString();
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                partyInfoWindow.setVisibility(View.VISIBLE);
-                openCreatePWindow.setVisibility(View.INVISIBLE);
-                windowOpen = true;
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    //Do something
+                                }
+                            });
+                    windowOpen = true;
+                }
             }
         });
 
@@ -253,9 +310,6 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
                     markerOptions.position(latLng);
                     markerOptions.title("Best party in PR created by " + owner);
                     /////////////////////////////////////////////////////////
-                    CameraUpdate zoomIn = CameraUpdateFactory.zoomTo(14);
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    googleMap.animateCamera(zoomIn);
                     Marker marker = googleMap.addMarker(markerOptions);
                     marker.setTag(partyIdKey);
                     //////////////////////////////////////////////////////////
@@ -372,13 +426,189 @@ public class HotSpotFragment extends android.app.Fragment implements OnMapReadyC
                     .removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Toast.makeText(getActivity(), "Not going to party", Toast.LENGTH_SHORT)
+                    Toast.makeText(getActivity(), "Removed from list", Toast.LENGTH_SHORT)
                             .show();
                     notGoingButton.setVisibility(View.INVISIBLE);
                     goingButton.setVisibility(View.VISIBLE);
                 }
             });
         }
+    }
 
+
+
+
+    /*
+        User location section
+     */
+
+
+
+
+
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission. ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission. ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("Location Permission")
+                        .setMessage("Need location to access map or something")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(getActivity(),
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission. ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int code,
+                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (code) {
+            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // location-related task you need to do.
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission. ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+
+                        //Request location updates:
+                        userMap.setMyLocationEnabled(true);
+                        googleApiClient.connect();
+                    }
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    userMap.setMyLocationEnabled(false);
+
+                }
+            }
+
+        }
+    }
+
+    //Initialize the googleAPIService
+    protected synchronized void buildGoogleAPI(){
+        googleApiClient = new GoogleApiClient.Builder(getActivity().getApplicationContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        //remove previous current location marker and add new one at current position
+        if (mCurrLocation != null) {
+            mCurrLocation.remove();
+        }
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.title("You");
+        markerOptions.position(latLng);
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        mCurrLocation = userMap.addMarker(markerOptions);
+        mCurrLocation.setTag("CurrentUser");
+
+        //If you only need one location, unregister the listener
+        //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        checkLocationPermission();
+        Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                googleApiClient);
+        if (mLastLocation != null) {
+            //place marker at current position
+            userMap.clear();
+            LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            ////////////////////////////////////////////////////
+            //Camera animation to your initial location
+            CameraUpdate zoomIn = CameraUpdateFactory.zoomTo(15);
+            userMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            userMap.animateCamera(zoomIn);
+            ///////////////////////////////////////////////////
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.title("You");
+            markerOptions.position(latLng);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+            mCurrLocation = userMap.addMarker(markerOptions);
+            mCurrLocation.setTag("CurrentUser");
+        }
+
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000); //5 seconds
+        mLocationRequest.setFastestInterval(3000); //3 seconds
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            double lat = mCurrLocation.getPosition().latitude;
+            double lon = mCurrLocation.getPosition().longitude;
+            List<Address> addresses = geocoder.getFromLocation(lat,lon, 1);
+            int maxAddresses = addresses.get(0).getMaxAddressLineIndex();
+            for (int i = 0; i < maxAddresses; i++){
+                String addressStr = addresses.get(0).getAddressLine(i);
+                stringBuilder.append(addressStr);
+                stringBuilder.append(" ");
+            }
+        }catch (IOException e){
+            Toast.makeText(getActivity(), "Could not load current address", Toast.LENGTH_SHORT)
+                    .show();
+        }
+        Toast.makeText(getActivity(), stringBuilder, Toast.LENGTH_SHORT)
+                .show();
+
+        //mLocationRequest.setSmallestDisplacement(0.1F); //1/10 meter
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient,
+                mLocationRequest, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
     }
 }
